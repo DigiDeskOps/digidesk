@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DIGIDESK — Vacation Rental Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#080c10;--surface:#0d1218;--surface2:#121920;--accent:#00e5ff;--accent2:#0066ff;--text:#e8edf2;--muted:#6b7a8d;--border:rgba(0,229,255,0.12);--glow:0 0 40px rgba(0,229,255,0.15)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 4rem;background:rgba(8,12,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;letter-spacing:.15em;color:var(--accent);text-decoration:none}
+.logo span{color:var(--text)}
+.nav-center{display:flex;gap:2.5rem}
+.nav-center a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
+.nav-center a:hover{color:var(--accent)}
+.lang-toggle{display:flex;gap:.3rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.2rem}
+.lang-btn{background:none;border:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;cursor:pointer;padding:.3rem .6rem;border-radius:4px;transition:all .2s;letter-spacing:.05em}
+.lang-btn.active{background:var(--accent);color:var(--bg)}
+.hero{min-height:100vh;display:flex;align-items:center;padding:8rem 4rem 4rem;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+.hero-glow{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(0,102,255,.15) 0%,transparent 70%);top:50%;right:-100px;transform:translateY(-50%);pointer-events:none}
+.hero-glow2{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,.08) 0%,transparent 70%);top:20%;left:10%;pointer-events:none}
+.hero-content{max-width:800px;position:relative;z-index:2}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.25);border-radius:100px;padding:.4rem 1rem;font-family:'Space Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem;animation:fadeUp .8s ease both}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.hero h1{font-size:clamp(3rem,7vw,6rem);font-weight:800;line-height:1.0;letter-spacing:-.02em;margin-bottom:1.5rem;animation:fadeUp .8s .1s ease both}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:1.15rem;color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:2.5rem;animation:fadeUp .8s .2s ease both}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp .8s .3s ease both}
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:var(--bg);padding:.85rem 2rem;border-radius:8px;font-weight:700;font-size:.9rem;letter-spacing:.05em;text-decoration:none;transition:all .2s;box-shadow:0 0 30px rgba(0,229,255,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,229,255,.5)}
+.btn-secondary{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--text);padding:.85rem 2rem;border-radius:8px;font-weight:700;font-size:.9rem;letter-spacing:.05em;text-decoration:none;border:1px solid var(--border);transition:all .2s}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.stats-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem 4rem;display:flex;justify-content:center;gap:4rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-family:'Space Mono',monospace;font-size:2rem;font-weight:700;color:var(--accent);display:block}
+.stat-label{font-size:.8rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:.2rem}
+section{padding:6rem 4rem;max-width:1200px;margin:0 auto}
+.section-tag{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.8rem}
+.section-tag::before{content:'';display:block;width:30px;height:1px;background:var(--accent)}
+.section-title{font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1rem;line-height:1.1}
+.section-sub{color:var(--muted);font-size:1.05rem;line-height:1.7;max-width:560px;margin-bottom:3.5rem}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.about-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem;position:relative;overflow:hidden}
+.about-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent),transparent)}
+.about-card-label{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem}
+.skill-list{display:flex;flex-direction:column;gap:.8rem}
+.skill-item{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.skill-name{font-size:.85rem;color:var(--text);min-width:150px}
+.skill-bar-bg{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.skill-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:2px;transition:width 1.5s ease}
+.about-text p{color:var(--muted);line-height:1.8;margin-bottom:1.2rem;font-size:1rem}
+.about-text p strong{color:var(--text)}
+.tools-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+.tool-tag{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.2);color:var(--accent);font-family:'Space Mono',monospace;font-size:.7rem;padding:.3rem .7rem;border-radius:4px;letter-spacing:.05em}
+.services-wrapper{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6rem 4rem}
+.services-inner{max-width:1200px;margin:0 auto}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.va-card{grid-column:span 2}
+.va-card .service-items{display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem}
+.service-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2rem;position:relative;transition:all .3s;overflow:hidden;display:flex;flex-direction:column}
+.service-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,229,255,.06) 0%,transparent 70%);opacity:0;transition:opacity .3s}
+.service-card:hover{border-color:rgba(0,229,255,.35);transform:translateY(-4px);box-shadow:var(--glow)}
+.service-card:hover::after{opacity:1}
+.service-card.featured{border-color:rgba(0,229,255,.4);background:linear-gradient(135deg,#0d1520,#0a1018)}
+.service-num{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:1.2rem;opacity:.6}
+.service-icon{font-size:1.8rem;margin-bottom:1rem}
+.service-card h3{font-size:1.1rem;font-weight:700;margin-bottom:.8rem;line-height:1.3}
+.service-card p{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem}
+.service-items{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.5rem}
+.service-items li{font-size:.82rem;color:var(--muted);padding-left:1.2rem;position:relative}
+.service-items li::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:.75rem}
+.service-meta{display:flex;align-items:center;justify-content:space-between;padding-top:1.2rem;border-top:1px solid var(--border);margin-top:auto}
+.service-price{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:700}
+.service-duration{font-size:.75rem;color:var(--muted);background:var(--surface2);padding:.2rem .6rem;border-radius:4px}
+.contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:4rem;align-items:start}
+.contact-info h3{font-size:1.3rem;font-weight:700;margin-bottom:1rem}
+.contact-info p{color:var(--muted);line-height:1.8;margin-bottom:2rem}
+.contact-links{display:flex;flex-direction:column;gap:.8rem}
+.contact-link{display:flex;align-items:center;gap:1rem;color:var(--text);text-decoration:none;font-size:.9rem;padding:.8rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;transition:all .2s}
+.contact-link:hover{border-color:var(--accent);color:var(--accent);transform:translateX(4px)}
+.contact-link-icon{width:32px;height:32px;background:rgba(0,229,255,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.contact-form{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem;position:relative;overflow:hidden}
+.contact-form::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent),transparent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+.form-group label{font-size:.78rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-family:'Space Mono',monospace}
+.form-group input,.form-group textarea,.form-group select{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.8rem 1rem;color:var(--text);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;resize:none;appearance:none}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent)}
+.form-group select option{background:var(--bg);color:var(--text)}
+.form-submit{width:100%;background:var(--accent);color:var(--bg);border:none;padding:1rem;border-radius:8px;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;margin-top:.5rem;box-shadow:0 0 30px rgba(0,229,255,.2)}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,229,255,.4)}
+.form-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+footer{background:var(--surface);border-top:1px solid var(--border);padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+footer .logo{font-size:1rem}
+footer p{font-size:.8rem;color:var(--muted);font-family:'Space Mono',monospace}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.form-success{display:none;text-align:center;padding:3rem 2rem}
+.form-success.show{display:block}
+.form-success-icon{font-size:3rem;margin-bottom:1rem}
+.form-success h3{font-size:1.3rem;margin-bottom:.5rem;color:var(--accent)}
+.form-success p{color:var(--muted);font-size:.9rem}
+[data-lang="hr"]{display:none}
+body.lang-hr [data-lang="hr"]{display:block}
+body.lang-hr [data-lang="en"]{display:none}
+body.lang-hr [data-lang-inline="hr"]{display:inline}
+body.lang-hr [data-lang-inline="en"]{display:none}
+[data-lang-inline="hr"]{display:none}
+[data-lang-inline="en"]{display:inline}
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-center{display:none}
+  .hero{padding:7rem 1.5rem 3rem}
+  section{padding:4rem 1.5rem}
+  .about-grid{grid-template-columns:1fr}
+  .services-grid{grid-template-columns:1fr}
+  .va-card{grid-column:span 1}
+  .va-card .service-items{grid-template-columns:1fr}
+  .services-wrapper{padding:4rem 1.5rem}
+  .contact-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .stats-bar{padding:1.5rem;gap:2rem}
+  footer{flex-direction:column;text-align:center;padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">DIGI<span>DESK</span></a>
+  <div class="nav-center">
+    <a href="#about" data-lang-inline="en">About</a>
+    <a href="#about" data-lang-inline="hr">O meni</a>
+    <a href="#services" data-lang-inline="en">Services</a>
+    <a href="#services" data-lang-inline="hr">Usluge</a>
+    <a href="#contact" data-lang-inline="en">Contact</a>
+    <a href="#contact" data-lang-inline="hr">Kontakt</a>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('hr')">HR</button>
+  </div>
+</nav>
+
+<section class="hero" style="max-width:100%;padding-top:8rem;padding-bottom:4rem;">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-content">
+    <div class="hero-tag" data-lang="en">Vacation Rental Operations Specialist</div>
+    <div class="hero-tag" data-lang="hr">Specijalistica za upravljanje kratkoročnim najmom</div>
+    <h1 data-lang="en">Run Smarter.<br><em>Rent Better.</em></h1>
+    <h1 data-lang="hr">Poslujte pametnije.<br><em>Iznajmite bolje.</em></h1>
+    <p data-lang="en">I help vacation rental owners and small agencies set up, optimize and automate their operations — from Airbnb listings to full PMS implementation.</p>
+    <p data-lang="hr">Pomažem iznajmljivačima i malim turističkim agencijama postaviti, optimizirati i automatizirati svoje poslovanje — od Airbnb listinga do potpune implementacije PMS sustava.</p>
+    <div class="hero-cta">
+      <a href="#services" class="btn-primary" data-lang="en">View Services ↓</a>
+      <a href="#services" class="btn-primary" data-lang="hr">Pogledaj usluge ↓</a>
+      <a href="#contact" class="btn-secondary" data-lang="en">Get in Touch</a>
+      <a href="#contact" class="btn-secondary" data-lang="hr">Kontaktiraj me</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-num">Airbnb</span>
+    <div class="stat-label" data-lang-inline="en">Listing Specialist</div>
+    <div class="stat-label" data-lang-inline="hr">Listing specijalistica</div>
+  </div>
+  <div class="stat">
+    <span class="stat-num">Guesty</span>
+    <div class="stat-label" data-lang-inline="en">Certified Experience</div>
+    <div class="stat-label" data-lang-inline="hr">Iskustvo s platformom</div>
+  </div>
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <div class="stat-label" data-lang-inline="en">Remote Operations</div>
+    <div class="stat-label" data-lang-inline="hr">Remote rad</div>
+  </div>
+  <div class="stat">
+    <span class="stat-num">3+</span>
+    <div class="stat-label" data-lang-inline="en">Years in Hospitality Tech</div>
+    <div class="stat-label" data-lang-inline="hr">Godine u hospitality techu</div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="about-grid">
+    <div class="about-text fade-up">
+      <div class="section-tag" data-lang="en">About Me</div>
+      <div class="section-tag" data-lang="hr">O meni</div>
+      <h2 class="section-title" data-lang="en">Operations expert in vacation rentals & hospitality tech</h2>
+      <h2 class="section-title" data-lang="hr">Stručnjakinja za operacije u kratkoročnom najmu i hospitality tehnologiji</h2>
+      <p data-lang="en">With a background in tourism and hands-on experience in SaaS platforms like Guesty, I understand both the guest experience and the backend systems that make rental businesses run smoothly.</p>
+      <p data-lang="hr">S diplomom iz turizma i praktičnim iskustvom u SaaS platformama poput Guesty, razumijem i iskustvo gostiju i backend sustave koji čine poslovanje iznajmljivanja glatkim.</p>
+      <p data-lang="en">I work <strong>project-based and remote</strong> — helping you set up systems, migrate data, onboard teams, and optimize workflows, without the overhead of a full-time hire.</p>
+      <p data-lang="hr">Radim <strong>projektno i remote</strong> — pomažući ti postaviti sustave, migrirati podatke, onboardati timove i optimizirati workflow, bez troškova zaposlenja na puno radno vrijeme.</p>
+      <div class="tools-grid">
+        <span class="tool-tag">Guesty</span>
+        <span class="tool-tag">Hostaway</span>
+        <span class="tool-tag">Rentlio</span>
+        <span class="tool-tag">MyRent</span>
+        <span class="tool-tag">Airbnb</span>
+        <span class="tool-tag">Booking.com</span>
+        <span class="tool-tag">Lodgify</span>
+        <span class="tool-tag">Cloudbeds</span>
+      </div>
+    </div>
+    <div class="about-visual fade-up">
+      <div class="about-card">
+        <div class="about-card-label" data-lang-inline="en">// Core Expertise</div>
+        <div class="about-card-label" data-lang-inline="hr">// Ključne kompetencije</div>
+        <div class="skill-list">
+          <div class="skill-item"><span class="skill-name">PMS / Channel Mgr</span><div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-width="95%"></div></div></div>
+          <div class="skill-item"><span class="skill-name">Airbnb & Booking</span><div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-width="92%"></div></div></div>
+          <div class="skill-item"><span class="skill-name">SaaS Onboarding</span><div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-width="90%"></div></div></div>
+          <div class="skill-item"><span class="skill-name">Guest Communication</span><div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-width="88%"></div></div></div>
+          <div class="skill-item"><span class="skill-name">Workflow Automation</span><div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-width="82%"></div></div></div>
+          <div class="skill-item"><span class="skill-name">Data Migration</span><div class="skill-bar-bg"><div class="skill-bar" style="width:0%" data-width="78%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="services" class="services-wrapper">
+  <div class="services-inner">
+    <div class="section-tag fade-up" data-lang="en">Services</div>
+    <div class="section-tag fade-up" data-lang="hr">Usluge</div>
+    <h2 class="section-title fade-up" data-lang="en">What I can do for you</h2>
+    <h2 class="section-title fade-up" data-lang="hr">Što mogu učiniti za tebe</h2>
+    <p class="section-sub fade-up" data-lang="en">Project-based services for vacation rental owners, property managers and small agencies. Clear deliverables, fixed timelines, remote execution.</p>
+    <p class="section-sub fade-up" data-lang="hr">Projektne usluge za vlasnike objekata, property menadžere i male agencije. Jasni rezultati, fiksni rokovi, remote izvođenje.</p>
+    <div class="services-grid">
+
+      <div class="service-card fade-up">
+        <div class="service-num">01</div>
+        <div class="service-icon">🏠</div>
+        <h3 data-lang="en">Listing Setup & Optimization</h3>
+        <h3 data-lang="hr">Postavljanje i optimizacija listinga</h3>
+        <p data-lang="en">Full setup of your property on Airbnb, Booking.com or Expedia — photos, descriptions, pricing, house rules and calendar.</p>
+        <p data-lang="hr">Potpuno postavljanje objekta na Airbnb, Booking.com ili Expedia — fotografije, opis, cijene, pravila i kalendar.</p>
+        <ul class="service-items" data-lang="en"><li>Airbnb & Booking.com listing</li><li>Description writing & SEO</li><li>Pricing & availability setup</li><li>Calendar sync</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Airbnb & Booking.com listing</li><li>Pisanje opisa i SEO</li><li>Postavljanje cijena i dostupnosti</li><li>Sinkronizacija kalendara</li></ul>
+        <div class="service-meta">
+          <span class="service-price">100–150 € <span style="font-weight:400;color:var(--muted);font-size:.75rem">/ objekt</span></span>
+          <span class="service-duration" data-lang="en">1–3 days</span>
+          <span class="service-duration" data-lang="hr">1–3 dana</span>
+        </div>
+      </div>
+
+      <div class="service-card featured fade-up">
+        <div class="service-num">02</div>
+        <div class="service-icon">⚙️</div>
+        <h3 data-lang="en">Full PMS / Channel Manager Setup</h3>
+        <h3 data-lang="hr">Potpuna implementacija PMS / channel managera</h3>
+        <p data-lang="en">End-to-end configuration of your property management system — from account creation to live reservations.</p>
+        <p data-lang="hr">Kompletna konfiguracija sustava za upravljanje smještajem — od kreiranja accounta do prvih rezervacija.</p>
+        <ul class="service-items" data-lang="en"><li>Account setup (Guesty, Rentlio, Hostaway…)</li><li>Platform connections & calendar sync</li><li>Reservation rules & pricing config</li><li>Test reservations & go-live</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Postavljanje accounta (Guesty, Rentlio, Hostaway…)</li><li>Spajanje platformi i sinkronizacija</li><li>Pravila rezervacija i konfiguracija cijena</li><li>Test rezervacije i go-live</li></ul>
+        <div class="service-meta">
+          <span class="service-price">400–800 €</span>
+          <span class="service-duration" data-lang="en">3–7 days</span>
+          <span class="service-duration" data-lang="hr">3–7 dana</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-up">
+        <div class="service-num">03</div>
+        <div class="service-icon">🔄</div>
+        <h3 data-lang="en">Data Migration</h3>
+        <h3 data-lang="hr">Migracija podataka</h3>
+        <p data-lang="en">Switching software? I handle the migration of all listings, reservations, photos and calendars with full post-migration testing.</p>
+        <p data-lang="hr">Mijenjate softver? Vodim migraciju svih listinga, rezervacija, fotografija i kalendara s testiranjem nakon migracije.</p>
+        <ul class="service-items" data-lang="en"><li>Data export & import</li><li>Calendar & reservation transfer</li><li>Integration testing</li><li>Workflow validation</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Export i import podataka</li><li>Transfer kalendara i rezervacija</li><li>Testiranje integracija</li><li>Validacija workflowa</li></ul>
+        <div class="service-meta">
+          <span class="service-price">od 500 €</span>
+          <span class="service-duration" data-lang="en">1–3 weeks</span>
+          <span class="service-duration" data-lang="hr">1–3 tjedna</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-up">
+        <div class="service-num">04</div>
+        <div class="service-icon">🎓</div>
+        <h3 data-lang="en">Onboarding & Staff Training</h3>
+        <h3 data-lang="hr">Onboarding i edukacija osoblja</h3>
+        <p data-lang="en">Train your team to use PMS and channel manager tools effectively, with documented workflows and ongoing support.</p>
+        <p data-lang="hr">Edukacija tima za učinkovito korištenje PMS i channel manager alata, s dokumentiranim workflowima i podrškom.</p>
+        <ul class="service-items" data-lang="en"><li>Onboarding calls & walkthroughs</li><li>Workflow documentation</li><li>Staff training sessions</li><li>Post go-live support</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Onboarding pozivi i demonstracije</li><li>Dokumentacija workflowa</li><li>Sesije edukacije osoblja</li><li>Podrška nakon go-live</li></ul>
+        <div class="service-meta">
+          <span class="service-price">150–250 €</span>
+          <span class="service-duration" data-lang="en">2–5 days</span>
+          <span class="service-duration" data-lang="hr">2–5 dana</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-up">
+        <div class="service-num">05</div>
+        <div class="service-icon">💬</div>
+        <h3 data-lang="en">Guest Communication Setup</h3>
+        <h3 data-lang="hr">Postavljanje komunikacije s gostima</h3>
+        <p data-lang="en">Automated message templates, email/SMS workflows and notification rules — less time typing, more time hosting.</p>
+        <p data-lang="hr">Automatizirani predlošci poruka, email/SMS workflowi i pravila notificiranja — manje tipkanja, više gostoprimstva.</p>
+        <ul class="service-items" data-lang="en"><li>Message template creation</li><li>Email & SMS automation</li><li>Check-in & check-out reminders</li><li>Review request workflows</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Kreiranje predložaka poruka</li><li>Email & SMS automatizacija</li><li>Podsjetnici za check-in i check-out</li><li>Workflow za zahtjeve recenzija</li></ul>
+        <div class="service-meta">
+          <span class="service-price">od 100 €</span>
+          <span class="service-duration" data-lang="en">2–5 days</span>
+          <span class="service-duration" data-lang="hr">2–5 dana</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-up">
+        <div class="service-num">06</div>
+        <div class="service-icon">🔍</div>
+        <h3 data-lang="en">Operations Audit & Quick Fix</h3>
+        <h3 data-lang="hr">Operativni audit i brzo rješenje</h3>
+        <p data-lang="en">Something not working right? I audit your current setup and fix specific issues — wrong calendars, duplicate listings, pricing errors.</p>
+        <p data-lang="hr">Nešto ne radi kako treba? Auditiram vaš setup i rješavam specifične probleme — pogrešni kalendari, duplikati, greške u cijenama.</p>
+        <ul class="service-items" data-lang="en"><li>Workflow analysis</li><li>Specific issue diagnosis</li><li>Fixes & recommendations</li><li>Automation suggestions</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Analiza workflowa</li><li>Dijagnoza specifičnog problema</li><li>Popravci i preporuke</li><li>Prijedlozi automatizacije</li></ul>
+        <div class="service-meta">
+          <span class="service-price">15–25 € / h</span>
+          <span class="service-duration" data-lang="en">1–3 days</span>
+          <span class="service-duration" data-lang="hr">1–3 dana</span>
+        </div>
+      </div>
+
+      <div class="service-card va-card fade-up">
+        <div class="service-num">07</div>
+        <div class="service-icon">🤖</div>
+        <h3 data-lang="en">Virtual Assistant Services</h3>
+        <h3 data-lang="hr">Usluge virtualnog asistenta</h3>
+        <p data-lang="en">Reliable remote support for your daily operations — from data entry and research to inbox management and admin tasks, so you can focus on growth.</p>
+        <p data-lang="hr">Pouzdana remote podrška za svakodnevne operacije — od unosa podataka i istraživanja do upravljanja inboxom i administrativnih zadataka.</p>
+        <ul class="service-items" data-lang="en"><li>Data entry & database management</li><li>Online research & competitor analysis</li><li>Email & calendar management</li><li>Document preparation & formatting</li><li>Spreadsheet creation & updates</li><li>Supplier & vendor communication</li><li>Social media scheduling support</li><li>Ad-hoc daily tasks & admin support</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Unos podataka i upravljanje bazama</li><li>Online istraživanje i analiza konkurencije</li><li>Upravljanje emailom i kalendarom</li><li>Priprema i formatiranje dokumenata</li><li>Kreiranje i ažuriranje tablica</li><li>Komunikacija s dobavljačima</li><li>Podrška za raspoređivanje na društvenim mrežama</li><li>Ad-hoc dnevni i administrativni zadaci</li></ul>
+        <div class="service-meta">
+          <span class="service-price">15–20 € / h <span style="font-weight:400;color:var(--muted);font-size:.72rem">or weekly package</span></span>
+          <span class="service-duration" data-lang="en">Flexible</span>
+          <span class="service-duration" data-lang="hr">Fleksibilno</span>
+        </div>
+      </div>
+
+      <div class="service-card fade-up">
+        <div class="service-num">08</div>
+        <div class="service-icon">📅</div>
+        <h3 data-lang="en">Guest Itinerary & Offer Creation</h3>
+        <h3 data-lang="hr">Izrada itinerara i ponuda za goste</h3>
+        <p data-lang="en">Custom travel itineraries and activity recommendations tailored to your guests — a personal touch that drives 5-star reviews.</p>
+        <p data-lang="hr">Prilagođeni itinerari putovanja i preporuke aktivnosti za vaše goste — osobni dodir koji donosi 5-zvjezdičaste recenzije.</p>
+        <ul class="service-items" data-lang="en"><li>Personalised travel itineraries</li><li>Local tips & activity suggestions</li><li>Restaurant & experience recommendations</li><li>Branded PDF welcome guides</li></ul>
+        <ul class="service-items" data-lang="hr"><li>Personalizirani itinerari putovanja</li><li>Lokalni savjeti i prijedlozi aktivnosti</li><li>Preporuke restorana i iskustava</li><li>Brendirani PDF vodiči dobrodošlice</li></ul>
+        <div class="service-meta">
+          <span class="service-price">50–80 € <span style="font-weight:400;color:var(--muted);font-size:.75rem">/ itinerary</span></span>
+          <span class="service-duration" data-lang="en">1–2 days</span>
+          <span class="service-duration" data-lang="hr">1–2 dana</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<section id="contact">
+  <div class="contact-grid">
+    <div class="contact-info fade-up">
+      <div class="section-tag" data-lang="en">Contact</div>
+      <div class="section-tag" data-lang="hr">Kontakt</div>
+      <h2 class="section-title" data-lang="en">Let's work together</h2>
+      <h2 class="section-title" data-lang="hr">Surađujmo zajedno</h2>
+      <p data-lang="en">Have a property to set up, a system to implement or a process to fix? Send me a message and I'll get back to you within 24 hours.</p>
+      <p data-lang="hr">Imate objekt za postaviti, sustav za implementirati ili proces za popraviti? Pošaljite mi poruku i odgovorit ću u roku 24 sata.</p>
+      <div class="contact-links">
+        <a href="mailto:digidesk.ops@gmail.com" class="contact-link">
+          <div class="contact-link-icon">✉️</div>
+          <span>digidesk.ops@gmail.com</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ketrin-pole%C5%A1ak/" target="_blank" class="contact-link">
+          <div class="contact-link-icon">💼</div>
+          <span>LinkedIn — Ketrin Polešak</span>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form fade-up">
+      <div id="form-fields">
+        <div class="form-row">
+          <div class="form-group">
+            <label data-lang="en">Name</label>
+            <label data-lang="hr">Ime</label>
+            <input type="text" placeholder="Your name" id="f-name" />
+          </div>
+          <div class="form-group">
+            <label data-lang="en">Email</label>
+            <label data-lang="hr">Email</label>
+            <input type="email" placeholder="your@email.com" id="f-email" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-lang="en">Service interested in</label>
+          <label data-lang="hr">Usluga koja te zanima</label>
+          <select id="f-service">
+            <option value="">Select a service…</option>
+            <option>Listing Setup & Optimization</option>
+            <option>PMS / Channel Manager Setup</option>
+            <option>Data Migration</option>
+            <option>Onboarding & Staff Training</option>
+            <option>Guest Communication Setup</option>
+            <option>Operations Audit & Quick Fix</option>
+            <option>Virtual Assistant Services</option>
+            <option>Guest Itinerary & Offer Creation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-lang="en">Message</label>
+          <label data-lang="hr">Poruka</label>
+          <textarea rows="5" placeholder="Tell me about your property and what you need…" id="f-msg"></textarea>
+        </div>
+        <button class="form-submit" onclick="submitForm()">
+          <span data-lang="en">Send Message →</span>
+          <span data-lang="hr">Pošalji poruku →</span>
+        </button>
+      </div>
+      <div class="form-success" id="form-success">
+        <div class="form-success-icon">✅</div>
+        <h3 data-lang="en">Message sent!</h3>
+        <h3 data-lang="hr">Poruka poslana!</h3>
+        <p data-lang="en">Thanks for reaching out. I'll reply within 24 hours.</p>
+        <p data-lang="hr">Hvala na poruci. Odgovorit ću u roku 24 sata.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <a href="#" class="logo">DIGI<span>DESK</span></a>
+  <p data-lang="en">© 2025 DIGIDESK · Vacation Rental Operations</p>
+  <p data-lang="hr">© 2025 DIGIDESK · Operacije kratkoročnog najma</p>
+  <p style="font-size:.72rem;color:var(--muted);" data-lang="en">Rijeka, Croatia · Remote worldwide</p>
+  <p style="font-size:.72rem;color:var(--muted);" data-lang="hr">Rijeka, Hrvatska · Remote cijeli svijet</p>
+</footer>
+
+<script>
+function setLang(lang) {
+  if (lang === 'hr') { document.body.classList.add('lang-hr'); }
+  else { document.body.classList.remove('lang-hr'); }
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.lang-btn[onclick="setLang(\'' + lang + '\')"]').classList.add('active');
+}
+
+const observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry, i) {
+    if (entry.isIntersecting) {
+      setTimeout(function() { entry.target.classList.add('visible'); }, i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el); });
+
+const barObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.skill-bar').forEach(function(bar) {
+        bar.style.width = bar.dataset.width;
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.about-card').forEach(function(el) { barObserver.observe(el); });
+
+async function submitForm() {
+  var name = document.getElementById('f-name').value;
+  var email = document.getElementById('f-email').value;
+  var service = document.getElementById('f-service').value;
+  var message = document.getElementById('f-msg').value;
+  if (!name || !email) return;
+  var btn = document.querySelector('.form-submit');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+  try {
+    var res = await fetch('https://formspree.io/f/xlgpjaee', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, service: service, message: message })
+    });
+    if (res.ok) {
+      document.getElementById('form-fields').style.display = 'none';
+      document.getElementById('form-success').classList.add('show');
+    } else {
+      btn.textContent = 'Something went wrong. Try again.';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    btn.textContent = 'Something went wrong. Try again.';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
